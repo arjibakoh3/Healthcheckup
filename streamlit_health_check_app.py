@@ -499,7 +499,7 @@ def build_pdf_report(
 # -----------------------------
 logo_col, title_col = st.columns([0.08, 0.92])
 with logo_col:
-    st.image(r"C:\Users\Lenovo\OneDrive\Documents\Checkup app\assets\sena_logo.jpg", width=120)
+    st.image("assets/sena_logo.jpg", width=120)
 with title_col:
     st.title("🩺 โปรแกรมตรวจสุขภาพ + Add-on")
 st.caption("เลือกแพ็กเกจพื้นฐาน แล้วติ๊ก Add-on ที่ต้องการ ระบบจะแสดงราคารวมและสรุปรายการให้ทันที")
