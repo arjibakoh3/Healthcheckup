@@ -281,6 +281,19 @@ def included_badge(text: str) -> str:
 def money(x: int) -> str:
     return f"{x:,.0f}"
 
+def normalize_exam_date() -> None:
+    d = st.session_state.get("exam_date")
+    if not d:
+        return
+    if d.weekday() in {0, 1, 3}:
+        st.session_state["exam_date_warn"] = False
+        return
+    next_date = pd.Timestamp(d)
+    while next_date.weekday() not in {0, 1, 3}:
+        next_date += pd.Timedelta(days=1)
+    st.session_state["exam_date"] = next_date.date()
+    st.session_state["exam_date_warn"] = True
+
 def build_pdf_report(
     base_choice: str,
     base_price: int,
@@ -484,7 +497,11 @@ def build_pdf_report(
 # -----------------------------
 # UI
 # -----------------------------
-st.title("🩺 โปรแกรมตรวจสุขภาพ + Add-on")
+logo_col, title_col = st.columns([0.08, 0.92])
+with logo_col:
+    st.image(r"C:\Users\Lenovo\OneDrive\Documents\Checkup app\assets\sena_logo.jpg", width=120)
+with title_col:
+    st.title("🩺 โปรแกรมตรวจสุขภาพ + Add-on")
 st.caption("เลือกแพ็กเกจพื้นฐาน แล้วติ๊ก Add-on ที่ต้องการ ระบบจะแสดงราคารวมและสรุปรายการให้ทันที")
 
 left, right = st.columns([1.2, 1.4])
@@ -512,11 +529,6 @@ with left:
         inc_html = inc_df.to_html(index=False, classes="inc-table", border=0)
     st.markdown(inc_html, unsafe_allow_html=True)
 
-    st.subheader("เงื่อนไขราคาอัตโนมัติ")
-    st.markdown(
-        "- หากเลือก **Standard** แล้วติ๊ก **LFT Panel (ตับแบบขยาย)** ระบบจะคิดเป็น **ราคาอัปเกรด 170** (เพิ่ม bilirubin + protein/albumin)\n"
-        "- รายการที่รวมในแพ็กเกจแล้วจะไม่ถูกคิดเงินซ้ำ"
-    )
     if base_choice.startswith("ข้าราชการ"):
         st.info(
             "กรณีสิทธิ์ข้าราชการ: ลูกค้าชำระเงินสดกับโรงพยาบาล แล้วนำใบเสร็จไปเบิกกับต้นสังกัดได้เฉพาะรายการในแพ็กเกจ "
@@ -696,8 +708,23 @@ else:
     st.write("ยังไม่ได้เลือก Add-on")
 
 # Download summary
-st.markdown("### ดาวน์โหลดสรุป")
-exam_date = st.date_input("วันที่มาตรวจ", value=pd.Timestamp.today().date())
+st.markdown("### บันทึกรายการตรวจสุขภาพ")
+st.caption("ท่านสามารถเลือกวันรับบริการ คือ วันจันทร์ อังคาร และพฤหัสบดี ของทุกเดือน")
+if "exam_date" not in st.session_state:
+    start_date = pd.Timestamp.today().date()
+    while start_date.weekday() not in {0, 1, 3}:
+        start_date = (pd.Timestamp(start_date) + pd.Timedelta(days=1)).date()
+    st.session_state["exam_date"] = start_date
+exam_date = st.date_input(
+    "วันที่มาตรวจ",
+    value=st.session_state["exam_date"],
+    min_value=pd.Timestamp.today().date(),
+    max_value=(pd.Timestamp.today() + pd.Timedelta(days=365)).date(),
+    key="exam_date",
+    on_change=normalize_exam_date,
+)
+if st.session_state.get("exam_date_warn"):
+    pass
 summary_text_lines = [
     f"วันที่มาตรวจ: {exam_date.strftime('%d/%m/%Y')}",
     f"Base package: {base_choice} = {money(base_price)} บาท",
