@@ -301,6 +301,7 @@ def build_pdf_report(
     compact_mode = total_rows >= 12
 
     font_candidates = [
+        (os.path.join("assets", "fonts", "Sarabun-Regular.ttf"), os.path.join("assets", "fonts", "Sarabun-Bold.ttf")),
         (r"C:\Windows\Fonts\THSarabunNew.ttf", r"C:\Windows\Fonts\THSarabunNew Bold.ttf"),
         (r"C:\Windows\Fonts\THSarabunNew.ttf", r"C:\Windows\Fonts\THSarabunNew.ttf"),
         (r"C:\Windows\Fonts\Tahoma.ttf", r"C:\Windows\Fonts\Tahoma.ttf"),
