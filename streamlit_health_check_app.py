@@ -612,9 +612,9 @@ with right:
                         is_included = True
 
                     help_txt = a["purpose"]
-                    label = f"{a_name} ? {money(a_price)} ???: {help_txt}"
+                    label = f"{a_name} — {money(a_price)} บาท: {help_txt}"
                     is_mutex = False
-                    if base_choice.startswith("Basic") or base_choice.startswith("????????? <35"):
+                    if base_choice.startswith("Basic") or base_choice.startswith("ข้าราชการ <35"):
                         # Mutual exclusion: liver panel
                         if "ENZ_LIVER" in selected_ids and "LFT_PANEL" in selected_ids:
                             selected_ids.discard("ENZ_LIVER")
@@ -637,7 +637,7 @@ with right:
                         picked = st.checkbox(label, value=default_val, disabled=(is_mutex and not default_val), key=f"pick_{a['id']}")
                         if picked:
                             selected_ids.add(a["id"])
-                            if base_choice.startswith("Basic") or base_choice.startswith("????????? <35"):
+                            if base_choice.startswith("Basic") or base_choice.startswith("ข้าราชการ <35"):
                                 if a["id"] == "ENZ_LIVER":
                                     selected_ids.discard("LFT_PANEL")
                                 if a["id"] == "LFT_PANEL":
