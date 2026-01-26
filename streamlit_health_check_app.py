@@ -620,6 +620,12 @@ with right:
                         if a["id"] == "ENZ_LIVER" and "LFT_PANEL" in selected_ids:
                             is_mutex = True
                         if a["id"] == "LFT_PANEL" and "ENZ_LIVER" in selected_ids:
+                        if "LIPID_UP" in selected_ids and ("HDL" in selected_ids or "LDL" in selected_ids):
+                            selected_ids.discard("LIPID_UP")
+                        if a["id"] == "LIPID_UP" and ("HDL" in selected_ids or "LDL" in selected_ids):
+                            is_mutex = True
+                        if a["id"] in {"HDL", "LDL"} and "LIPID_UP" in selected_ids:
+                            is_mutex = True
                             is_mutex = True
                     if is_included:
                         st.checkbox(included_badge(a_name), value=True, disabled=True, key=f"inc_{a['id']}")
@@ -632,6 +638,11 @@ with right:
                                 if a["id"] == "ENZ_LIVER":
                                     selected_ids.discard("LFT_PANEL")
                                 if a["id"] == "LFT_PANEL":
+                                if a["id"] == "LIPID_UP":
+                                    selected_ids.discard("HDL")
+                                    selected_ids.discard("LDL")
+                                if a["id"] in {"HDL", "LDL"}:
+                                    selected_ids.discard("LIPID_UP")
                                     selected_ids.discard("ENZ_LIVER")
                         else:
                             selected_ids.discard(a["id"])
