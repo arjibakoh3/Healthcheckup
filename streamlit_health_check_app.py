@@ -612,21 +612,24 @@ with right:
                         is_included = True
 
                     help_txt = a["purpose"]
-                    label = f"{a_name} — {money(a_price)} บาท: {help_txt}"
+                    label = f"{a_name} ? {money(a_price)} ???: {help_txt}"
                     is_mutex = False
-                    if base_choice.startswith("Basic") or base_choice.startswith("ข้าราชการ <35"):
+                    if base_choice.startswith("Basic") or base_choice.startswith("????????? <35"):
+                        # Mutual exclusion: liver panel
                         if "ENZ_LIVER" in selected_ids and "LFT_PANEL" in selected_ids:
                             selected_ids.discard("ENZ_LIVER")
                         if a["id"] == "ENZ_LIVER" and "LFT_PANEL" in selected_ids:
                             is_mutex = True
                         if a["id"] == "LFT_PANEL" and "ENZ_LIVER" in selected_ids:
+                            is_mutex = True
+                        # Mutual exclusion: lipid upgrade vs HDL/LDL (Basic + civil <35)
                         if "LIPID_UP" in selected_ids and ("HDL" in selected_ids or "LDL" in selected_ids):
                             selected_ids.discard("LIPID_UP")
                         if a["id"] == "LIPID_UP" and ("HDL" in selected_ids or "LDL" in selected_ids):
                             is_mutex = True
                         if a["id"] in {"HDL", "LDL"} and "LIPID_UP" in selected_ids:
                             is_mutex = True
-                            is_mutex = True
+
                     if is_included:
                         st.checkbox(included_badge(a_name), value=True, disabled=True, key=f"inc_{a['id']}")
                     else:
@@ -634,16 +637,16 @@ with right:
                         picked = st.checkbox(label, value=default_val, disabled=(is_mutex and not default_val), key=f"pick_{a['id']}")
                         if picked:
                             selected_ids.add(a["id"])
-                            if base_choice.startswith("Basic") or base_choice.startswith("ข้าราชการ <35"):
+                            if base_choice.startswith("Basic") or base_choice.startswith("????????? <35"):
                                 if a["id"] == "ENZ_LIVER":
                                     selected_ids.discard("LFT_PANEL")
                                 if a["id"] == "LFT_PANEL":
+                                    selected_ids.discard("ENZ_LIVER")
                                 if a["id"] == "LIPID_UP":
                                     selected_ids.discard("HDL")
                                     selected_ids.discard("LDL")
                                 if a["id"] in {"HDL", "LDL"}:
                                     selected_ids.discard("LIPID_UP")
-                                    selected_ids.discard("ENZ_LIVER")
                         else:
                             selected_ids.discard(a["id"])
 
